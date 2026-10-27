@@ -36,7 +36,7 @@ public class TelaCriarDisciplina extends javax.swing.JFrame {
                 return false;
             }
         };
-        tabelaAlunos.setModel(modeloTabela);
+        jTable1.setModel(modeloTabela);
         atualizarTotal();
     }
   
@@ -181,7 +181,7 @@ public class TelaCriarDisciplina extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Preencha o nome e as respostas do aluno.", "Atenção", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (respostas.length() != 10 || !respostas.matches("[VF]+")) {
+        if (!Aluno.respostasValidas(respostas)) {
             JOptionPane.showMessageDialog(this, "As respostas devem conter exatamente 10 caracteres (apenas V ou F).", "Atenção", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -212,7 +212,7 @@ public class TelaCriarDisciplina extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        jTextField2.requestFocus();
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -227,11 +227,14 @@ public class TelaCriarDisciplina extends javax.swing.JFrame {
         }
 
         try {
-            Disciplina disciplina = new Disciplina(nomeDisciplina, alunos);
+            Disciplina disciplina = new Disciplina(nomeDisciplina);
+            for (Aluno aluno : alunos) {
+                disciplina.adicionarAluno(aluno);
+            }
             gerenciador.salvarDisciplina(disciplina);
             JOptionPane.showMessageDialog(this, "Disciplina salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             dispose();
-        } catch (IOException ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar arquivo: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton3ActionPerformed

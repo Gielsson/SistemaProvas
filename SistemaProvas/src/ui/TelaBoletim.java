@@ -4,6 +4,17 @@
  */
 package ui;
 
+import java.awt.Font;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import servico.GeradorBoletim;
+import servico.GerenciadorArquivos;
+
 /**
  *
  * @author Usuario
@@ -15,8 +26,53 @@ public class TelaBoletim extends javax.swing.JFrame {
     /**
      * Creates new form TelaBoletim
      */
+    private final GerenciadorArquivos gerenciador = new GerenciadorArquivos();
+    private final GeradorBoletim gerador = new GeradorBoletim(gerenciador);
+
     public TelaBoletim() {
         initComponents();
+        setLocationRelativeTo(null);
+
+        // pasta de resultados já vem preenchida com a padrão (dados/resultados)
+        jTextField3.setText(gerenciador.getDirResultados().toString());
+        jTextField3.setEditable(false);
+
+        jTextArea1.setText("");
+        jTextArea1.setEditable(false);
+        jTextArea1.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+
+        jButton1.addActionListener(e -> escolherPasta());
+        jButton2.addActionListener(e -> gerarBoletins());
+    }
+
+    private void escolherPasta() {
+        JFileChooser seletor = new JFileChooser(System.getProperty("user.dir"));
+        seletor.setDialogTitle("Selecione a pasta com os resultados");
+        seletor.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (seletor.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            jTextField3.setText(seletor.getSelectedFile().getAbsolutePath());
+        }
+    }
+
+    private void gerarBoletins() {
+        if (jTextField3.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Escolha a pasta de resultados.",
+                    "Atenção", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            Path dirResultados = Paths.get(jTextField3.getText());
+            List<String> boletins = gerador.gerar(dirResultados, gerenciador.getDirBoletins());
+            jTextArea1.setText(String.join("\n", boletins));
+            jTextArea1.setCaretPosition(0);
+            JOptionPane.showMessageDialog(this,
+                    boletins.size() + " boletim(ns) gerado(s) em:\n"
+                            + gerenciador.getDirBoletins().toAbsolutePath(),
+                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "Não foi possível gerar os boletins: " + ex.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**

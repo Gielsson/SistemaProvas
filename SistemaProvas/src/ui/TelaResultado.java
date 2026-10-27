@@ -5,6 +5,7 @@
 package ui;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JFileChooser;
@@ -13,9 +14,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import modelo.Disciplina;
-import modelo.Notas;
 import servico.CorretorProva;
 import servico.GerenciadorArquivos;
+import servico.ResultadoAluno;
+
 public class TelaResultado extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaResultado.class.getName());
@@ -231,32 +233,32 @@ public class TelaResultado extends javax.swing.JFrame {
                 aviso("A disciplina não possui alunos cadastrados.");
                 return;
             }
-            disciplina.setGabarito(gerenciador.lerGabarito(jTextField1.getText()));
+            disciplina.setGabarito(gerenciador.lerGabarito(Paths.get(jTextField1.getText())));
 
-            List<Notas> notas = corretor.corrigir(disciplina);
-            List<Notas> alfabetica = corretor.ordenarPorNome(notas);
-            List<Notas> porNota = corretor.ordenarPorNota(notas);
-            double media = corretor.calcularMedia(notas);
+            List<ResultadoAluno> resultados = corretor.corrigirTurma(disciplina.getAlunos(), disciplina.getGabarito());
+            List<ResultadoAluno> alfabetica = corretor.ordenarAlfabetica(resultados);
+            List<ResultadoAluno> porNota = corretor.ordenarPorNota(resultados);
+            double media = corretor.calcularMedia(resultados);
 
-            gerenciador.salvarResultadoAlfabetico(nome, alfabetica);
-            gerenciador.salvarResultadoPorNota(nome, porNota, media);
+            gerenciador.salvarResultados(nome, alfabetica, porNota, media);
 
             preencherTabela(modeloAlfabetico, alfabetica);
             preencherTabela(modeloNotas, porNota);
-            jLabel3.setText(String.format(Locale.US, "Média da turma: %.1f", media));
+            jLabel3.setText(String.format(Locale.US, "Média da turma: %.2f", media));
 
             JOptionPane.showMessageDialog(this,
-                    "Resultado gerado e salvo na pasta dados/resultados.",
+                    "Resultado gerado e salvo em:\n" + gerenciador.getDirResultados().toAbsolutePath(),
                     "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
-            erro(ex.getMessage());
+        } catch (IOException | IllegalArgumentException ex) {
+            // IllegalArgumentException cobre caminho inválido e respostas/gabarito fora do padrão
+            erro("Não foi possível gerar o resultado: " + ex.getMessage());
         }
     }
 
-    private void preencherTabela(DefaultTableModel modelo, List<Notas> notas) {
+    private void preencherTabela(DefaultTableModel modelo, List<ResultadoAluno> resultados) {
         modelo.setRowCount(0);
-        for (Notas nota : notas) {
-            modelo.addRow(new Object[]{nota.getAluno(), nota.getPontos()});
+        for (ResultadoAluno r : resultados) {
+            modelo.addRow(new Object[]{r.getNome(), r.getPontos()});
         }
     }
 
