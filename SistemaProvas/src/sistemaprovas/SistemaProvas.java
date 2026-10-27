@@ -1,20 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
-package sistemaprovas;
+package SistemaProvas;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import ui.TelaPrincipal;
 
 /**
- *
- * @author Usuario
+ * Ponto de entrada: abre a tela principal.
+ * Todos os arquivos ficam na pasta "dados" ao lado do programa
+ * (ver GerenciadorArquivos.DIRETORIO_PADRAO).
  */
 public class SistemaProvas {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignorada) {
+                // segue com o visual padrão
+            }
+            new TelaPrincipal().setVisible(true);
+        });
     }
-    
 }
