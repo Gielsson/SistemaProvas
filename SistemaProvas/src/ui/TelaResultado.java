@@ -4,20 +4,45 @@
  */
 package ui;
 
-/**
- *
- * @author Usuario
- */
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+
+import modelo.Disciplina;
+import modelo.Notas;
+import servico.CorretorProva;
+import servico.GerenciadorArquivos;
 public class TelaResultado extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaResultado.class.getName());
+    private final GerenciadorArquivos gerenciador = new GerenciadorArquivos();
+    private final CorretorProva corretor = new CorretorProva();
+    private DefaultTableModel modeloAlfabetico;
+    private DefaultTableModel modeloNotas;
 
-    /**
-     * Creates new form TelaResultado
-     */
     public TelaResultado() {
         initComponents();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setTitle("Gerar resultado");
+        setLocationRelativeTo(null);
+
+        jTextField1.setText("");
+        jTextField1.setEditable(false);
+        jLabel3.setText("Média da turma: -");
+
+        modeloAlfabetico = criarModelo();
+        modeloNotas = criarModelo();
+        jTable1.setModel(modeloAlfabetico);
+        jTable2.setModel(modeloNotas);
+
+        jComboBox1.removeAllItems();
+        carregarDisciplinas();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,22 +53,220 @@ public class TelaResultado extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jProgressBar1 = new javax.swing.JProgressBar();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jTextField1 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setText("Disciplina:");
+
+        jLabel2.setText("Gabarito:");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
+
+        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+
+        jButton1.setText("Escolher gabarito");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
+        jButton2.setText("Gerar resultado");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jTabbedPane1.addTab("Ordem alfabética", jScrollPane1);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(jTable2);
+
+        jTabbedPane1.addTab("Por nota", jScrollPane2);
+
+        jLabel3.setText("Média da turma:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(186, 186, 186))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+          escolherGabarito(); // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+         gerarResultado(); // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+    private DefaultTableModel criarModelo() {
+        return new DefaultTableModel(new Object[]{"Aluno", "Pontos"}, 0) {
+            @Override
+            public boolean isCellEditable(int linha, int coluna) {
+                return false;
+            }
+        };
+    }
+
+    private void carregarDisciplinas() {
+        try {
+            for (String nome : gerenciador.listarDisciplinas()) {
+                jComboBox1.addItem(nome);
+            }
+        } catch (IOException ex) {
+            erro("Não foi possível listar as disciplinas: " + ex.getMessage());
+        }
+    }
+
+    private void escolherGabarito() {
+        JFileChooser seletor = new JFileChooser(System.getProperty("user.dir"));
+        seletor.setDialogTitle("Selecione o arquivo do gabarito");
+        seletor.setFileFilter(new FileNameExtensionFilter("Arquivos de texto (*.txt)", "txt"));
+
+        if (seletor.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            jTextField1.setText(seletor.getSelectedFile().getAbsolutePath());
+        }
+    }
+
+    private void gerarResultado() {
+        String nome = (String) jComboBox1.getSelectedItem();
+
+        if (nome == null) {
+            aviso("Nenhuma disciplina cadastrada. Crie uma disciplina primeiro.");
+            return;
+        }
+        if (jTextField1.getText().isEmpty()) {
+            aviso("Escolha o arquivo do gabarito.");
+            return;
+        }
+
+        try {
+            Disciplina disciplina = gerenciador.lerDisciplina(nome);
+            if (disciplina.getAlunos().isEmpty()) {
+                aviso("A disciplina não possui alunos cadastrados.");
+                return;
+            }
+            disciplina.setGabarito(gerenciador.lerGabarito(jTextField1.getText()));
+
+            List<Notas> notas = corretor.corrigir(disciplina);
+            List<Notas> alfabetica = corretor.ordenarPorNome(notas);
+            List<Notas> porNota = corretor.ordenarPorNota(notas);
+            double media = corretor.calcularMedia(notas);
+
+            gerenciador.salvarResultadoAlfabetico(nome, alfabetica);
+            gerenciador.salvarResultadoPorNota(nome, porNota, media);
+
+            preencherTabela(modeloAlfabetico, alfabetica);
+            preencherTabela(modeloNotas, porNota);
+            jLabel3.setText(String.format(Locale.US, "Média da turma: %.1f", media));
+
+            JOptionPane.showMessageDialog(this,
+                    "Resultado gerado e salvo na pasta dados/resultados.",
+                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            erro(ex.getMessage());
+        }
+    }
+
+    private void preencherTabela(DefaultTableModel modelo, List<Notas> notas) {
+        modelo.setRowCount(0);
+        for (Notas nota : notas) {
+            modelo.addRow(new Object[]{nota.getAluno(), nota.getPontos()});
+        }
+    }
+
+    private void aviso(String mensagem) {
+        JOptionPane.showMessageDialog(this, mensagem, "Atenção", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private void erro(String mensagem) {
+        JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     /**
      * @param args the command line arguments
      */
@@ -70,5 +293,18 @@ public class TelaResultado extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
