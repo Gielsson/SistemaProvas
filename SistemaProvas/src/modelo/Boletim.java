@@ -10,14 +10,14 @@ public class Boletim {
     private static final String LINHA = "====================================";
 
     private String nomeAluno;
-    private List<Nota> notas;
+    private List<Notas> notas;
 
     public Boletim(String nomeAluno) {
         this.nomeAluno = nomeAluno;
         this.notas = new ArrayList<>();
     }
 
-    public void adicionarNota(Nota nota) {
+    public void adicionarNota(Notas nota) {
         notas.add(nota);
     }
 
@@ -26,7 +26,7 @@ public class Boletim {
             return 0;
         }
         double soma = 0;
-        for (Nota nota : notas) {
+        for (Notas nota : notas) {
             soma += nota.getPontos();
         }
         return soma / notas.size();
@@ -40,7 +40,7 @@ public class Boletim {
         return nomeAluno;
     }
 
-    public List<Nota> getNotas() {
+    public List<Notas> getNotas() {
         return notas;
     }
 
@@ -50,7 +50,7 @@ public class Boletim {
         sb.append("BOLETIM GERAL DO ALUNO\n");
         sb.append(LINHA).append("\n");
         sb.append("Aluno: ").append(nomeAluno).append("\n");
-        for (Nota nota : notas) {
+        for (Notas nota : notas) {
             sb.append(String.format("Disciplina: %-12s Nota: %d%n", nota.getDisciplina(), nota.getPontos()));
         }
         sb.append(String.format(Locale.US, "Média geral: %.1f%n", calcularMedia()));
